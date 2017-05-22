@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+	<title>manki test</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+	 <div class="container" id="container">
+	 	<table id="user" class="striped">
+	 		<tr>
+	 			<th>ID</th>
+	 			<th>Name</th>
+	 			<th>Lastname</th>
+	 			<th>Email</th>
+	 			<th>Phone</th>
+	 			<th>State</th>
+	 			<th class="center">
+	 				<a class="waves-effect waves-light btn" href="#modal1">
+	 					<i class="small material-icons">perm_identity</i>
+	 				</a>
+	 			</th>
+	 		</tr>
+	 		<tr v-for="users in user" :key="users.id">
+	 			<td>{{users.id}}</td>
+	 			<td>{{users.name}}</td>
+	 			<td>{{users.lastname}}</td>
+	 			<td>{{users.email}}</td>
+	 			<td>{{users.phone}}</td>
+	 			<td>{{users.state}}</td>
+	 			<td class="center"><button class="waves-effect waves-light btn d" v-bind:id="users.id">delete</button></td>
+	 		</tr>
+	 	</table>
+	 </div>
+	 <div id="modal1" class="modal modal-fixed-footer">
+	 	<div id="method">
+		    <div class="modal-content">
+		      <h5 class="center">Add new user</h5>
+			    <form class="col s12">
+			      <div class="row">
+			        <div class="input-field col s6">
+			        <i class="material-icons prefix">perm_identity</i>
+			          <input id="id-user" type="text" class="validate">
+			          <label for="id-user">ID</label>
+			        </div>
+			        <div class="input-field col s6">
+			          <input id="state" type="text" class="validate">
+			          <label for="state">state</label>
+			        </div>
+			      </div>
+			      <div class="row">
+			        <div class="input-field col s6">
+			          <i class="material-icons prefix">account_circle</i>
+			          <input id="name" type="text" class="validate">
+			          <label for="name">First Name</label>
+			        </div>
+			        <div class="input-field col s6">
+			          <input id="last_name" type="text" class="validate">
+			          <label for="last_name">Last Name</label>
+			        </div>
+			      </div>
+			      <div class="row">
+			        <div class="input-field col s6">
+			          <i class="material-icons prefix">phone</i>
+			          <input id="phone" type="tel" class="validate">
+			          <label for="phone">Telephone</label>
+			        </div>
+			        <div class="input-field col s6">
+			          <input id="email" type="email" class="validate">
+			          <label for="email" data-error="Coloque un correo valido" data-success="Válido">Email</label>
+			        </div>
+			      </div>
+			    </form>
+		    </div>
+		    <div class="modal-footer">
+		      <button class="btn waves-effect waves-light" type="submit" v-on:click="add($event)">Add
+			    <i class="material-icons right">send</i>
+			  </button>
+	  	      <button class="btn waves-effect waves-light modal-close" style="margin-right: 5px;" name="action">Cancel
+			  </button>
+		    </div>
+		 </div>
+  	  </div>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>	  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script type="text/javascript">
+  localStorage.id = 1;
+  	$('.modal').modal();
+  	//vue js 
+  	var cont = new Vue({
+  		el:'#container',
+  		data:{
+  			user:[]
+  		}
+  	});
+  	var all = new Vue({
+  		el:'#method',
+  		data:{
+  			
+  		},
+  		methods:{
+  			add:function(e){
+  				var state = $('#state').val()
+  				var id = $('#id-user').val();
+  				if (id!="") {
+  					all.update(id)
+  				}else{
+	  				count = localStorage.id
+	  				e.preventDefault()
+	  				if (state =="") {
+	  					state = "Activate"
+	  				}
+	  				var object = {
+	  					id 		: count, 
+	  					state 	: state,
+	  					name 	: $('#name').val(),
+	  					lastname: $('#last_name').val(),
+	  					phone 	: $('#phone').val(),
+	  					email 	: $('#email').val()
+	  				}
+	  				cont.user.push(object);
+	  				localStorage.id = parseInt(localStorage.id) + 1;
+	  				$('#modal1').modal('close');
+	  				$('#id-user').prop('disabled', false);
+  				}
+  			},
+  			update:function(id){
+  				cont.user.forEach(function(res){
+  					if (res.id==id){
+  						res.name 	=$('#name').val()
+  						res.lastname=$('#last_name').val()
+  						res.phone 	=$('#phone').val()
+  						res.email 	=$('#email').val()
+  					}
+  				})
+  				$('#modal1').modal('close');
+  			},
+  			delete:function(id){
+				var index = cont.user.findIndex(function(o){
+				     return o.id === id;
+				})
+				cont.user.splice(index, 1);
+  			}
+  		}
+  	})
+  	if (cont.user.length==0) {
+  		$('#id-user').prop('disabled', true);
+  	}
+  	$(document).on('click','button.d',function(){
+  		all.delete($(this).attr('id'))
+  	})
+
+  </script>
+</body>
+</html>
