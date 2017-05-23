@@ -41,34 +41,23 @@
 			    <form class="col s12">
 			      <div class="row">
 			        <div class="input-field col s6">
-			        <i class="material-icons prefix">perm_identity</i>
-			          <input id="id-user" type="text" class="validate">
-			          <label for="id-user">ID</label>
-			        </div>
-			        <div class="input-field col s6">
-			          <input id="state" type="text" class="validate">
-			          <label for="state">state</label>
-			        </div>
-			      </div>
-			      <div class="row">
-			        <div class="input-field col s6">
 			          <i class="material-icons prefix">account_circle</i>
-			          <input id="name" type="text" class="validate">
+			          <input id="name" v-model="name" type="text" class="validate">
 			          <label for="name">First Name</label>
 			        </div>
 			        <div class="input-field col s6">
-			          <input id="last_name" type="text" class="validate">
+			          <input id="last_name" type="text" v-model="lastname" class="validate">
 			          <label for="last_name">Last Name</label>
 			        </div>
 			      </div>
 			      <div class="row">
 			        <div class="input-field col s6">
 			          <i class="material-icons prefix">phone</i>
-			          <input id="phone" type="tel" class="validate">
+			          <input id="phone" type="tel" v-model="phone" class="validate">
 			          <label for="phone">Telephone</label>
 			        </div>
 			        <div class="input-field col s6">
-			          <input id="email" type="email" class="validate">
+			          <input id="email" type="email" class="validate" v-model="email">
 			          <label for="email" data-error="Coloque un correo valido" data-success="Válido">Email</label>
 			        </div>
 			      </div>
@@ -90,9 +79,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
   <script src="https://unpkg.com/vue"></script>
   <script type="text/javascript">
-  localStorage.id = 1;
   	$('.modal').modal();
   	//vue js 
+  	if (localStorage.id && localStorage.id!="" && localStorage.id!="NaN") {}else{localStorage.id=1}
   	var cont = new Vue({
   		el:'#container',
   		data:{
@@ -102,60 +91,49 @@
   	var all = new Vue({
   		el:'#method',
   		data:{
-  			
+  			id:localStorage.id,
+  			name:"",
+  			lastname:"",
+  			phone:"",
+  			email:"",
+  			state:"Activate"
   		},
   		methods:{
+  			setdata:function(){
+  				if (localStorage.data && localStorage.data !="") {
+  					cont.user = JSON.parse(localStorage.data)
+  				}
+  			},
   			add:function(e){
-  				var state = $('#state').val()
-  				var id = $('#id-user').val();
-  				if (id!="") {
-  					all.update(id)
-  				}else{
-	  				count = localStorage.id
 	  				e.preventDefault()
-	  				if (state =="") {
-	  					state = "Activate"
-	  				}
 	  				var object = {
-	  					id 		: count, 
-	  					state 	: state,
-	  					name 	: $('#name').val(),
-	  					lastname: $('#last_name').val(),
-	  					phone 	: $('#phone').val(),
-	  					email 	: $('#email').val()
+	  					id 		: this.id, 
+	  					state 	: this.state,
+	  					name 	: this.name,
+	  					lastname: this.lastname,
+	  					phone 	: this.phone,
+	  					email 	: this.email
 	  				}
 	  				cont.user.push(object);
 	  				localStorage.id = parseInt(localStorage.id) + 1;
+	  				this.id=localStorage.id;
+	  				localStorage.data = JSON.stringify(cont.user)
+	  				console.log(localStorage.data)
 	  				$('#modal1').modal('close');
-	  				$('#id-user').prop('disabled', false);
-  				}
-  			},
-  			update:function(id){
-  				cont.user.forEach(function(res){
-  					if (res.id==id){
-  						res.name 	=$('#name').val()
-  						res.lastname=$('#last_name').val()
-  						res.phone 	=$('#phone').val()
-  						res.email 	=$('#email').val()
-  					}
-  				})
-  				$('#modal1').modal('close');
   			},
   			delete:function(id){
 				var index = cont.user.findIndex(function(o){
 				     return o.id === id;
 				})
 				cont.user.splice(index, 1);
+				localStorage.data = JSON.stringify(cont.user)
   			}
   		}
   	})
-  	if (cont.user.length==0) {
-  		$('#id-user').prop('disabled', true);
-  	}
   	$(document).on('click','button.d',function(){
   		all.delete($(this).attr('id'))
   	})
-
+  	all.setdata()
   </script>
 </body>
 </html>
